@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup - Sports Accessories</title>
+    <link rel="stylesheet" href="style.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #E0E7FF 0%, #C7D2FE 100%);
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #3730A3;
+        }
+        .form-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+        }
+        .input-field, .select-field, .textarea-field {
+            border: 1px solid #D1D5DB;
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: border-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .input-field:focus, .select-field:focus, .textarea-field:focus {
+            border-color: #4F46E5;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+        .btn { /* General button class */
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+            width: 100%;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4F46E5;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #4338CA;
+        }
+        .btn-social { /* Also used for Gemini button styling base */
+            border: 1px solid #D1D5DB;
+            background-color: white;
+            color: #374151; /* Default text color for social/secondary */
+        }
+        .btn-social:hover {
+            background-color: #F3F4F6;
+            border-color: #9CA3AF;
+        }
+        .btn-gemini { /* Specific style for Gemini button */
+            border: 1px solid #6D28D9; /* Purple border */
+            color: #6D28D9; /* Purple text */
+            background-color: #F5F3FF; /* Light purple background */
+        }
+        .btn-gemini:hover {
+            background-color: #EDE9FE; /* Slightly darker purple background on hover */
+            border-color: #5B21B6;
+        }
+        .text-link {
+            color: #4F46E5;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .text-link:hover {
+            text-decoration: underline;
+        }
+        .password-toggle-icon {
+            cursor: pointer;
+            color: #9CA3AF;
+        }
+        .phone-input-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid #D1D5DB;
+            border-radius: 12px;
+            padding-left: 12px;
+        }
+        .phone-input-container:focus-within {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+        .country-code-selector {
+            padding-right: 8px;
+            color: #4B5563;
+            background: transparent;
+            border: none;
+            outline: none;
+        }
+        .phone-input-field {
+            border: none;
+            border-radius: 0 12px 12px 0;
+            padding: 12px 16px;
+            flex-grow: 1;
+        }
+        .phone-input-field:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .radio-group label {
+            margin-right: 1rem;
+            color: #374151;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 0.25rem;
+            accent-color: #4F46E5;
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #3730A3;
+            margin-bottom: 16px;
+        }
+        .modal-body {
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.6;
+            white-space: pre-wrap; /* To respect newlines from Gemini response */
+        }
+        .modal-close-btn {
+            background-color: #4F46E5;
+            color: white;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            float: right;
+        }
+        .modal-close-btn:hover {
+            background-color: #4338CA;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #4F46E5; /* Indigo */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+
+    <div class="logo-container text-center mb-8">
+       <div class="inline-flex items-center justify-center">
+    <img src="logo.png" alt="SportsConnect Logo" class="w-12 h-12 sm:w-16 sm:h-16 mr-3">
+    <span class="text-3xl font-bold text-[#3730A3]">Sports Connect</span>
+</div>
+
+    </div>
+
+    <main id="auth-content" class="w-full max-w-md">
+        <div id="login-form-container" class="form-container p-6 sm:p-8 space-y-6">
+            <div class="text-center">
+                <h1 class="form-title">Welcome Back!</h1>
+                <p class="form-subtitle mt-2">Log in to access your sports accessories account.</p>
+            </div>
+            <button class="btn btn-social w-full flex items-center justify-center space-x-2">
+                <img src="https://placehold.co/20x20/DB4437/FFFFFF?text=G" alt="Google" class="w-5 h-5 rounded-full" onerror="this.src='https://placehold.co/20x20/CCCCCC/FFFFFF?text=G'">
+                <span>Sign in with Google</span>
+            </button>
+            <button class="btn btn-social w-full flex items-center justify-center space-x-2">
+                 <img src="https://placehold.co/20x20/4267B2/FFFFFF?text=f" alt="Facebook" class="w-5 h-5 rounded-full" onerror="this.src='https://placehold.co/20x20/CCCCCC/FFFFFF?text=F'">
+                <span>Sign in with Facebook</span>
+            </button>
+            <div class="flex items-center space-x-2">
+                <hr class="flex-grow border-gray-300">
+                <span class="text-gray-500 text-sm">Or</span>
+                <hr class="flex-grow border-gray-300">
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="login-email" name="login-email" class="input-field w-full" placeholder="your.email@example.com" required>
+                </div>
+                <div>
+                    <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="login-password" name="login-password" class="input-field w-full pr-10" placeholder="********" required>
+                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center password-toggle-icon" onclick="togglePasswordVisibility('login-password')">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <label for="remember-me" class="flex items-center">
+                        <input type="checkbox" id="remember-me" name="remember-me" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Remember me</span>
+                    </label>
+                    <a href="#" class="text-link">Forgot Password ?</a>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Log In</button>
+            </form>
+            <p class="text-center text-sm text-gray-600">
+                Don't have an account ? <span id="show-signup" class="text-link">Sign Up</span>
+            </p>
+        </div>
+
+        <div id="signup-form-container" class="form-container p-6 sm:p-8 space-y-5 hidden relative">
+            <button id="back-to-login" class="absolute top-6 left-6 text-gray-600 hover:text-indigo-600 z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+            </button>
+            <div class="text-center pt-8 sm:pt-0">
+                <h1 class="form-title">Create Account</h1>
+                <p class="form-subtitle mt-2">Join us to find the best sports accessories!</p>
+                <p class="form-subtitle mt-1">Already have an account? <span id="show-login" class="text-link">Login</span></p>
+            </div>
+
+            <form id="signup-form" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label for="first-name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label><input type="text" id="first-name" name="first-name" class="input-field w-full" placeholder="Lois" required></div>
+                    <div><label for="last-name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label><input type="text" id="last-name" name="last-name" class="input-field w-full" placeholder="Becket" required></div>
+                </div>
+                <div><label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" id="signup-email" name="signup-email" class="input-field w-full" placeholder="loisbecket@example.com" required></div>
+                <div>
+                    <label for="birth-date" class="block text-sm font-medium text-gray-700 mb-1">Birth of Date</label>
+                    <div class="relative"><input type="text" id="birth-date" name="birth-date" class="input-field w-full pr-10" placeholder="DD/MM/YYYY" required><span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg></span></div>
+                </div>
+                <div><label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label><input type="number" id="age" name="age" class="input-field w-full" placeholder="e.g., 25" min="1" required></div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                    <div class="mt-1 space-x-4 radio-group flex items-center">
+                        <label for="gender-male" class="flex items-center"><input type="radio" id="gender-male" name="gender" value="male" class="h-4 w-4" required><span class="ml-2 text-sm text-gray-700">Male</span></label>
+                        <label for="gender-female" class="flex items-center"><input type="radio" id="gender-female" name="gender" value="female" class="h-4 w-4"><span class="ml-2 text-sm text-gray-700">Female</span></label>
+                        <label for="gender-other" class="flex items-center"><input type="radio" id="gender-other" name="gender" value="other" class="h-4 w-4"><span class="ml-2 text-sm text-gray-700">Other</span></label>
+                    </div>
+                </div>
+                <div>
+                    <label for="phone-number" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <div class="phone-input-container"><select id="country-code" name="country-code" class="country-code-selector bg-transparent"><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+91" selected>🇮🇳 +91</option><option value="+61">🇦🇺 +61</option></select><input type="tel" id="phone-number" name="phone-number" class="phone-input-field w-full" placeholder="(999) 999-9999" required></div>
+                </div>
+                <div><label for="shipping-address" class="block text-sm font-medium text-gray-700 mb-1">Shipping Address</label><textarea id="shipping-address" name="shipping-address" rows="3" class="textarea-field w-full" placeholder="123 Main St, Anytown, USA 12345" required></textarea></div>
+                
+                <button type="button" id="get-recommendations-btn" class="btn btn-gemini w-full flex items-center justify-center">
+                    <span class="gemini-btn-text">✨ Get Personalized Accessory Tips</span>
+                    <div class="loading-spinner hidden ml-2"></div>
+                </button>
+
+                <div>
+                    <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Set Password</label>
+                    <div class="relative"><input type="password" id="signup-password" name="signup-password" class="input-field w-full pr-10" placeholder="********" required><span class="absolute inset-y-0 right-0 pr-3 flex items-center password-toggle-icon" onclick="togglePasswordVisibility('signup-password')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg></span></div>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Register</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="recommendations-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title">✨ Personalized Accessory Tips!</h2>
+            <div id="modal-body-content" class="modal-body">
+                Loading suggestions...
+            </div>
+            <button id="modal-close" class="modal-close-btn">Close</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
